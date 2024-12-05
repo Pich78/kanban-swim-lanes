@@ -46,30 +46,40 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateBoard(data) {
         kanbanBoard.innerHTML = ''; // Clear existing board
         const swimlanes = {};
+        const lists = new Set();
         let firstSwimlane = true;
 
+        // Extract swimlanes and lists from data
         data.forEach(task => {
             if (!swimlanes[task.swimlane]) {
                 swimlanes[task.swimlane] = {
                     title: task.swimlane,
-                    lists: {
-                        'To Do': createList('list-todo-' + task.swimlane, 'To Do', firstSwimlane),
-                        'In Progress': createList('list-inprogress-' + task.swimlane, 'In Progress', firstSwimlane),
-                        'Done': createList('list-done-' + task.swimlane, 'Done', firstSwimlane)
-                    }
+                    lists: {}
                 };
-                firstSwimlane = false;
             }
+            lists.add(task.list);
+        });
 
+        // Create lists for each swimlane
+        for (const swimlaneId in swimlanes) {
+            lists.forEach(list => {
+                swimlanes[swimlaneId].lists[list] = createList(`list-${list}-${swimlaneId}`, list, firstSwimlane);
+            });
+            firstSwimlane = false;
+        }
+
+        // Add cards to lists
+        data.forEach(task => {
             const card = createCard(task);
             swimlanes[task.swimlane].lists[task.list].appendChild(card);
         });
 
+        // Append swimlanes to the board
         for (const swimlaneId in swimlanes) {
             const swimlane = createSwimlane(swimlaneId, swimlanes[swimlaneId].title);
-            swimlane.appendChild(swimlanes[swimlaneId].lists['To Do']);
-            swimlane.appendChild(swimlanes[swimlaneId].lists['In Progress']);
-            swimlane.appendChild(swimlanes[swimlaneId].lists['Done']);
+            lists.forEach(list => {
+                swimlane.appendChild(swimlanes[swimlaneId].lists[list]);
+            });
             kanbanBoard.appendChild(swimlane);
             kanbanBoard.appendChild(document.createElement('div')).className = 'kanban-separator';
         }
