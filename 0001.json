@@ -1,0 +1,6 @@
+{
+  "title": "Fix Bug #123",
+  "description": "Resolve the issue causing the server crash.",
+  "list": "To Do",
+  "swimlane": "Backend"
+}

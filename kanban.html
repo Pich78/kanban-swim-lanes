@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        .kanban-board {
+            display: flex;
+            flex-direction: column;
+        }
+        .kanban-header {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .kanban-list-header {
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .kanban-swimlane {
+            display: flex;
+            margin: 10px 0;
+            position: relative;
+        }
+        .kanban-list {
+            flex: 1;
+            margin: 0 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            padding: 10px;
+            position: relative;
+        }
+        .kanban-list::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e0e0e0;
+            z-index: -1;
+            border-radius: 5px;
+        }
+        .kanban-card {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .kanban-swimlane-title {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            position: absolute;
+            left: -50px;
+            top: 50%;
+            transform: translateY(-50%) rotate(180deg);
+            font-weight: bold;
+            background-color: #f5f5f5;
+            padding: 5px;
+            border-radius: 5px;
+            z-index: 1;
+        }
+        .kanban-separator {
+            height: 2px;
+            background-color: #ccc;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .select-folder-button {
+            margin: 20px;
+        }
+        .kanban-list-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="btn select-folder-button" id="select-folder">Select Folder</button>
+        <div class="kanban-board" id="kanban-board"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="kanban.js"></script>
+</body>
+</html>
