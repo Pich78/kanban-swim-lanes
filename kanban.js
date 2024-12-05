@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const kanbanBoard = document.getElementById('kanban-board');
     const selectFolderButton = document.getElementById('select-folder');
+    const listAttributeSelect = document.getElementById('list-attribute');
+    const swimlaneAttributeSelect = document.getElementById('swimlane-attribute');
+    let jsonData = [];
 
     // Function to create a new card
     function createCard(task) {
@@ -43,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to generate the board from JSON data
-    function generateBoard(data) {
+    function generateBoard(data, listAttribute, swimlaneAttribute) {
         kanbanBoard.innerHTML = ''; // Clear existing board
         const swimlanes = {};
         const lists = new Set();
@@ -51,13 +54,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Extract swimlanes and lists from data
         data.forEach(task => {
-            if (!swimlanes[task.swimlane]) {
-                swimlanes[task.swimlane] = {
-                    title: task.swimlane,
+            if (!swimlanes[task[swimlaneAttribute]]) {
+                swimlanes[task[swimlaneAttribute]] = {
+                    title: task[swimlaneAttribute],
                     lists: {}
                 };
             }
-            lists.add(task.list);
+            lists.add(task[listAttribute]);
         });
 
         // Create lists for each swimlane
@@ -71,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add cards to lists
         data.forEach(task => {
             const card = createCard(task);
-            swimlanes[task.swimlane].lists[task.list].appendChild(card);
+            swimlanes[task[swimlaneAttribute]].lists[task[listAttribute]].appendChild(card);
         });
 
         // Append swimlanes to the board
@@ -151,21 +154,67 @@ document.addEventListener('DOMContentLoaded', function() {
     async function readFilesFromFolder() {
         const dirHandle = await window.showDirectoryPicker();
         const files = [];
+        const attributes = new Set();
 
         for await (const entry of dirHandle.values()) {
             if (entry.kind === 'file' && entry.name.endsWith('.json')) {
                 const file = await entry.getFile();
                 const content = await file.text();
-                files.push(JSON.parse(content));
+                const jsonData = JSON.parse(content);
+                files.push(jsonData);
+
+                // Collect all unique attribute names
+                Object.keys(jsonData).forEach(attr => attributes.add(attr));
             }
         }
+
+        // Populate dropdown menus with attribute names
+        populateDropdown(listAttributeSelect, attributes);
+        populateDropdown(swimlaneAttributeSelect, attributes);
 
         return files;
     }
 
+    // Function to populate dropdown menus
+    function populateDropdown(dropdown, attributes) {
+        dropdown.innerHTML = ''; // Clear existing options
+        attributes.forEach(attr => {
+            const option = document.createElement('option');
+            option.value = attr;
+            option.textContent = attr;
+            dropdown.appendChild(option);
+        });
+    }
+
     // Event listener for the select folder button
     selectFolderButton.addEventListener('click', async function() {
-        const data = await readFilesFromFolder();
-        generateBoard(data);
+        jsonData = await readFilesFromFolder();
+        const listAttribute = listAttributeSelect.value;
+        const swimlaneAttribute = swimlaneAttributeSelect.value;
+
+        if (listAttribute && swimlaneAttribute) {
+            generateBoard(jsonData, listAttribute, swimlaneAttribute);
+        } else {
+            alert('Please select both list and swimlane attributes.');
+        }
+    });
+
+    // Event listeners for the dropdown menus
+    listAttributeSelect.addEventListener('change', function() {
+        const listAttribute = listAttributeSelect.value;
+        const swimlaneAttribute = swimlaneAttributeSelect.value;
+
+        if (listAttribute && swimlaneAttribute) {
+            generateBoard(jsonData, listAttribute, swimlaneAttribute);
+        }
+    });
+
+    swimlaneAttributeSelect.addEventListener('change', function() {
+        const listAttribute = listAttributeSelect.value;
+        const swimlaneAttribute = swimlaneAttributeSelect.value;
+
+        if (listAttribute && swimlaneAttribute) {
+            generateBoard(jsonData, listAttribute, swimlaneAttribute);
+        }
     });
 });

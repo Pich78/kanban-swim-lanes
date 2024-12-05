@@ -79,10 +79,29 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+        .dropdown-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 20px 0;
+        }
+        .dropdown-container > div {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="dropdown-container">
+            <div>
+                <label for="swimlane-attribute">Select Swimlane Attribute:</label>
+                <select id="swimlane-attribute" class="browser-default"></select>
+            </div>
+            <div>
+                <label for="list-attribute">Select List Attribute:</label>
+                <select id="list-attribute" class="browser-default"></select>
+            </div>
+        </div>
         <button class="btn select-folder-button" id="select-folder">Select Folder</button>
         <div class="kanban-board" id="kanban-board"></div>
     </div>
